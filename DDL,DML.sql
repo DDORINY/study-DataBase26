@@ -446,3 +446,298 @@ order by first_name desc;
 select *
 from customer
 order by store_id desc, first_name asc;
+
+/* DESC로 데이터 정렬하기 */
+/* first_name열을 내림차순으로 정렬*/
+SELECT *
+FROM customer ORDER BY first_name DESC;
+
+/* ASC와 DESC를 조합하여 데이터 정렬하기 */
+SELECT * FROM customer order by store_id DESC, first_name ASC;
+
+/* LIMIT으로 상위 데이터 조회하기*/
+/* LIMIT으로 상위 10개의 데이터 조회*/
+SELECT * FROM customer order by store_id DESC,first_name asc limit 10;
+
+/* LIMIT으로 101번째부터 10개의 데이터 조회*/
+select * from customer order by customer_id asc limit 100,10;
+
+/*OFFSET으로 특정구간의 데이터조회하기*/
+/*데이터 100개 건너뛰고 101번쨰부터 데이터 10개 조회*/
+select * from customer order by customer_id asc limit 10 offset 100;
+
+/*와일카드로 문자열조회하기*/
+/*LIKE와 %로 특정 문자열을 포함하는 데이터 조회*/
+/*첫번째 글자가 A로 시작하는 데이터 조회*/
+select * from customer where first_name like 'A%';
+
+/*첫번째 글자가 AA로 시작하는 데이터 조회*/
+select * from customer where first_name like 'AA%';
+
+/* A로 끝나는 모든 데이터 조회*/
+select * from customer where first_name like '%A';
+
+/* RA로 끝나는 모든 데이터 조회*/
+select * from customer where first_name like '%RA';
+
+/* A를 포함하는 모든 데이터 조회*/
+select * from customer where first_name like '%A%';
+
+/*첫번째 글자가 A로 시작하지 않는 데이터 조회*/
+select * from customer where first_name not like 'A%';
+
+/*ESCAPE로 특수문자를 포함한 데이터 조회*/
+/* 특수 문자를 포함한 임의의 테이블 생성*/
+WITH CTE (col_1) AS(
+SELECT 'A%BC' UNION ALL
+SELECT 'A_BC' UNION ALL
+SELECT 'ABC'
+)
+
+SELECT * FROM CTE;
+
+/* 특수문자%를 포함한 데이터 조회*/
+WITH CTE (col_1) AS (
+SELECT 'A%BC' UNION ALL
+SELECT 'A_BC' UNION ALL
+SELECT 'ABC'
+)
+
+SELECT *FROM CTE WHERE col_1 LIKE '%';
+
+/* ESCAPE특수문자%를 포함한 데이터 조회*/
+WITH CTE (col_1) AS (
+SELECT 'A%BC' UNION ALL
+SELECT 'A_BC' UNION ALL
+SELECT 'ABC'
+)
+
+SELECT *FROM CTE WHERE col_1 LIKE '%#%%' ESCAPE '#';
+
+/* ESCAPE와 !로 특수문자%를 포함한 데이터 조회*/
+WITH CTE (col_1) AS (
+SELECT 'A%BC' UNION ALL
+SELECT 'A_BC' UNION ALL
+SELECT 'ABC'
+)
+
+SELECT *FROM CTE WHERE col_1 LIKE '%!%%' ESCAPE '!';
+
+/*LIKE와 _로 길이가 정해진 데이터 조회하기*/
+/*A로 시작하면서 문자열 길이가 2인 데이터 조회*/
+SELECT * FROM customer WHERE first_name LIKE 'A_';
+
+/*A로 시작하면서 문자열 길이가 3인 데이터 조회*/
+SELECT *FROM customer WHERE first_name LIKE 'A__';
+
+/*A로 끝나면서 문자열 길이가 3인 데이터 조회*/
+SELECT * FROM customer WHERE first_name LIKE 'A__A';
+
+/*문자열의 길이가 5인 데이터 조회*/
+SELECT * FROM customer WHERE first_name LIKE '_____';
+
+/*_과 %로 문자열 조회하기*/
+/*A_R로 시작하는 문자열 조회*/
+SELECT *FROM customer WHERE first_name LIKE 'A_R%';
+
+/*_R로 시작하는 문자열 조회*/
+SELECT *FROM customer WHERE first_name LIKE '__R%';
+
+/*A로 시작하면서 R_로 끝나는 문자열 조회*/
+SELECT * From customer WHERE first_name LIKE 'A%R_';
+
+/*REGEXP로 더 다양한 데이터 조회하기*/
+/*. 줄 바꿈 문자 \n를 제외한 임의의 한 문자를 의미한다. 
+* 해당 문자 패턴이 0번 이상 반복한다. 
++ 해당문자 패턴이 1번 이상 반복한다. 
+^ 문자열의 처음을 의미한다. 
+$ 문자열의 끝을 의미한다. 
+| or을 의미한다. 
+[...] 대괄호 ([])안에 있는 어떠한 문자를 의미한다. 
+[^...] 대괄호 ([])안에 있는 않은 어떠한 문자를 의미한다.
+{n} 반복되는 횟수를 지정한다. 
+{m,n} 반복되는 횟수의 최솟값과 최댓값을 지정한다. */
+
+/*^,|,$를 사용해 데이터 조회*/
+SELECT * FROM customer WHERE first_name REGEXP '^K|N$';
+
+/*[...]를 사용해 데이터를 조회*/
+SELECT * FROM customer WHERE first_name REGEXP 'K[L-N]';
+
+/*[^...]를 사용해 데이터를 조회*/
+SELECT * FROM customer WHERE first_name REGEXP 'K[^L-N]';
+
+/*와일드카드 더 활용해 보기*/
+/*%와 [...]을 사용해 데이터 조회*/
+SELECT * FROM customer WHERE first_name LIKE 'S%' AND first_name REGEXP 'A[L-N]';
+
+/*와잍드카드 조합으로 데이터 조회*/
+SELECT * FROM customer WHERE first_name Like '_______'
+	AND first_name REGEXP 'A[L-N]'
+    AND first_name REGEXP 'O$';
+    
+/*GROUP BY 절로 데이터 묶기*/
+/*테이터 그룹에 특정 조건을 필터링해 필요한 데이터를 조회하는 경우도 있다.
+GROUP BY전과 HAVING절의 기본형식
+SELECT [열] FROM [테이블] WHERE [열] = [조건값] GROUP BY [열] HAVING [열] = [조건값]*/
+
+/*GROUP BY 절로 데이터 그룹화하기*/
+/*하나의 열을 기준으로 그룹화하기*/
+/*special features열의 데이터를 그룹화*/
+SELECT special_features FROM film GROUP BY special_features;
+
+/*rating열의 데이터 그룹화*/
+SELECT rating FROM film GROUP BY rating;
+
+/*2개 이상의 열을 기준으로 그룸화하기*/
+/*special_features,rating 열 순서로 데이터를 그룹화*/
+SELECT special_features, rating FROM film GROUP BY special_features, rating;
+
+/*rating, special_features 열 순서로 데이터 그룹화*/
+SELECT rating,special_features FROM film GROUP BY special_features, rating;
+
+/*COUNT 로 그룹화한 열의 데이터 개수 세기*/
+/*COUNT 함수로 그룹에 속한 데이터 개수 세기*/
+SELECT special_features, COUNT(*) AS cnt FROM film GROUP BY special_features;
+
+/*두 열의 데이터 그룹에 속한 데이터 개수 세기*/
+SELECT special_features, rting, COUNT(*) AS cnt FROM film
+group by special_features, rting order by special_features, rting, cnt DESC;
+ 
+ /*sELECT 문과 GROUP BY절의 열 이름을 달리할 경우*/
+ SELECT special_features, rating, COUNT(*) AS cnt FRom film GROUP BY rating;
+ /* Error Code: 1055. Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 
+ 'sakila.film.special_features' which is not functionally dependent on columns in GROUP BY clause; this is 
+ incompatible with sql_mode=only_full_group_by	
+ 
+ 오류 내용은 SELECT 문에 사용된 열이 GROUP BY에 명시되지 않아 열을 그룹화할 수 없다는 의미*/
+ 
+ /*HAVING 절로 그룹화한 데이터 필터링하기*/
+ /*rating 열을 기준으로 그룹화한 뒤, rating 열에서 G인 데이터만 필터링해보자!
+ rating 열에서 G인 데이터 필터링*/
+SELECT special_features, rating
+FROM film
+GROUP BY special_features, rating
+HAVING rating = 'G';
+
+/*special_features 열에서 데이터 개수가 70보다 큰 것만 필터링*/
+SELECT special_features, COUNT(*) AS cnt 
+FROM film
+GROUP BY special_features
+HAVING cnt > 70;
+
+/*DISTINCT로 중복된 데이터 제거하기*/
+/*DISTINCT의 기본형식
+SELECT DISTINCT [열] FROM [테이블]*/
+
+/*두 열의 데이터 중복제거*/
+SELECT DISTINCT special_features, rating From film;
+
+/*GROUP BY 절로 두 열을 그룹화한 경우*/
+SELECT special_features, rating FROM film
+GROUP BY special_features,rating;
+
+/*AUTO_INCREMENT로 데이터 자동입력하기*/
+/*첫번쨰 열에서 AUTO_INCREMENT 적용*/
+USE doitsql;
+
+CREATE TABLE doit_increment(
+col_1 INT auto_increment primary key,
+col_2 varchar(50),
+col_3 int);
+
+insert into doit_increment (col_2,col_3) values ('1 자동입력',1);
+insert into doit_increment (col_2,col_3) values ('2 자동입력',2);
+select *from doit_increment;
+
+/*자동 입력된 값과 동일한 값을 입력하는 경우*/
+insert into doit_increment (col_1,col_2,col_3) values (3,'3 자동입력',3);
+select *from doit_increment;
+
+/*자동입력되는 값보다 큰 값을 입력한 경우*/
+insert into doit_increment (col_1,col_2,col_3) values (5,'4를 건너뛰고 5자동입력',5);
+select *from doit_increment;
+
+/*1열을 제외하고 데이터 입력한 경우*/
+insert into doit_increment (col_2,col_3) values ('어디까지 입력되었을까?',0);
+select *from doit_increment;
+
+/*AUTO_INCREMENT로 자동 생성된 마지막 값 확인하기*/
+/*AUTO_INCREMENT가 적용된 열의 마지막 데이터 조회*/
+SELECT LAST_INSERT_ID();
+
+/*AUTO_INCREMENT 시작값 변경하기*/
+/*자동으로 입력되는 값을 100부터 시작*/
+ALTER TABLE doit_increment AUTO_INCREMENT = 100;
+INSERT INTO doit_increment (col_2,col_3) values('시작값이 변경되었을까?',0);
+
+/*AUTO_INCREMENT 증갓값 변경하기*/
+/*자동으로 입력되는 값이 5씩 증가*/
+SET @@AUTO_INCREMENT_INCREMENT =5;
+INSERT INTO doit_increment (col_2,col_3) values('5씩 증가할까?(1)',0);
+INSERT INTO doit_increment (col_2,col_3) values('5씩 증가할까?(2)',0);
+select *from doit_increment;
+
+/*조회결과를 테이블에 입력하기*/
+/*조회결과를 다른 테이블에 입력하기*/
+/*INSERT INTO와 SELECT로 다른 테이블에 결과 입력*/
+CREATE TABLE doit_insert_select_from (
+    col_1 INT,
+    col_2 VARCHAR(10)
+);
+
+CREATE TABLE doit_insert_select_to (
+    col_1 INT,
+    col_2 VARCHAR(10)
+);
+
+insert into doit_insert_select_from values(1,'do');
+insert into doit_insert_select_from values(2,'it');
+insert into doit_insert_select_from values(3,'mysql');
+
+insert into doit_insert_select_to
+SELECT * FROM doit_insert_select_from;
+
+SELECT * FROM doit_insert_select_to;
+
+/*새 테이블에 조회결과 입력하기*/
+/*CREATE TABLE로 새 테이블에 결과입력*/
+CREATE TABLE doit_select_new AS (SELECT * FROM doit_insert_select_from);
+SELECT *FROM doit_select_new;
+
+/*외래어로 연결되어 있는 테이블 조작하기*/
+/*외래키로 연결되어 있는 테이블에 데이터 입력 및 삭제하기*/
+/*부모 테이블과 자식테이블 생성*/
+CREATE TABLE doit_parent (col_1 int primary key);
+create table doit_child (col_1 int);
+alter table doit_child
+add foreign key (col_1)references doit_parent(col_1);
+
+/*자식테이블에 데이터 입력 시 부모 테이블에 해당 데이터가 없는 경우*/
+insert into doit_child values(1);
+/*Error Code: 1452. Cannot add or update a child row: 
+a foreign key constraint fails (`doitsql`.`doit_child`,
+ CONSTRAINT `doit_child_ibfk_1` FOREIGN KEY (`col_1`) 
+ REFERENCES `doit_parent` (`col_1`)
+ 
+ 
+ 오류 내용 : doit_child 테이블에 doit_parent테이블의 col_1에 대해서 외래키가 설정되어 있어 참조 오류가 발생*/
+ 
+ /*부모테이블에 데이터 입력 후 자식 테이블에도 데이터 입력*/
+ insert into doit_parent values (1);
+ insert into doit_child values (1);
+ 
+ select * from doit_parent;
+ select * from doit_child;
+ 
+ /*자식테이블의 데이터 삭제 후 부모 테이블의 데이터 삭제*/
+ DELETE FROM doit_child WHERE col_1=1;
+ DELETE FROM doit_parent WHERE col_1=1;
+ 
+ /*외래어로 연결되어 있는 테이블 삭제*/
+ /*하위 테이블 삭제 후 상위 텝이블 삭제*/
+ DROP TABLE doit_child;
+ drop table doit_parent;
+ 
+ /*부모 테이블 생성 후 제약 조건 확인*/
+ 
