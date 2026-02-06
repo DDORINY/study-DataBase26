@@ -39,3 +39,4 @@ https://dev.mysql.com/downloads/workbench/
 	   ㄴ REVOKE : 권한삭제
 		** 트렌젝션이란, 일관작업을 말한다.
 ```
+
